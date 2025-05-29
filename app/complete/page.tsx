@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,12 +24,13 @@ import {
 import { useSearchParams } from "next/navigation";
 import { QRCode } from "@/components/QRCode";
 
-export default function CompletePage() {
-	const [email, setEmail] = useState("");
-	const [emailSent, setEmailSent] = useState(false);
+function CompleteContent() {
 	const searchParams = useSearchParams();
 	const sessionId = searchParams.get("session");
 	const deliveryMethod = searchParams.get("delivery") || "qr";
+
+	const [email, setEmail] = useState("");
+	const [emailSent, setEmailSent] = useState(false);
 
 	// 実際にはAPIから取得するQRコードURL
 	const qrCodeUrl = "/placeholder.svg?height=300&width=300";
@@ -66,7 +67,7 @@ export default function CompletePage() {
 	};
 
 	return (
-		<div className="min-h-screen gradient-bg">
+		<>
 			{/* 右上にトップに戻るボタン */}
 			<Link href="/" className="fixed top-6 right-6 z-50">
 				<Button
@@ -201,6 +202,16 @@ export default function CompletePage() {
 					</CardFooter>
 				</Card>
 			</div>
+		</>
+	);
+}
+
+export default function CompletePage() {
+	return (
+		<div className="min-h-screen gradient-bg">
+			<Suspense>
+				<CompleteContent />
+			</Suspense>
 
 			{/* 装飾要素 */}
 			<div className="fixed top-10 right-10 animate-bounce">
