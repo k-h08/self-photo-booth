@@ -32,8 +32,15 @@ function CompleteContent() {
 	const [email, setEmail] = useState("");
 	const [emailSent, setEmailSent] = useState(false);
 
-	// 実際にはAPIから取得するQRコードURL
-	const qrCodeUrl = "/placeholder.svg?height=300&width=300";
+	// QRコード用の絶対URLを生成
+	const [downloadUrl, setDownloadUrl] = useState("");
+	useEffect(() => {
+		if (sessionId) {
+			const origin =
+				typeof window !== "undefined" ? window.location.origin : "";
+			setDownloadUrl(`${origin}/download/${sessionId}`);
+		}
+	}, [sessionId]);
 
 	// 紙吹雪のランダム生成（クライアント側のみ）
 	const [confetti, setConfetti] = useState<any[]>([]);
@@ -111,7 +118,7 @@ function CompleteContent() {
 								<div className="bg-gradient-to-r from-indigo-100 to-purple-100 p-6 rounded-2xl inline-block border-4 border-white shadow-lg pulse">
 									<div className="flex justify-center my-2">
 										{sessionId ? (
-											<QRCode value={`/download/${sessionId}`} size={220} />
+											<QRCode value={downloadUrl} size={220} />
 										) : (
 											<span className="text-gray-400">QRコードを生成中...</span>
 										)}
@@ -120,6 +127,11 @@ function CompleteContent() {
 								<p className="mt-3 text-lg text-gray-600">
 									QRコードをスキャンして写真をダウンロード
 								</p>
+								{downloadUrl && (
+									<p className="mt-2 text-xs text-gray-400 break-all">
+										{downloadUrl}
+									</p>
+								)}
 							</div>
 						)}
 						{deliveryMethod === "email" && (
