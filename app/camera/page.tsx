@@ -265,11 +265,11 @@ export default function CameraPage() {
 					<Home className="h-8 w-8 text-purple-500" />
 				</Button>
 			</Link>
-			<div className="container flex flex-col items-center justify-center min-h-screen p-4 sm:p-6">
-				<div className="w-full max-w-6xl mx-auto flex flex-col sm:flex-row gap-8 items-stretch">
+			<div className="container flex flex-col items-center justify-center min-h-screen p-0 w-full">
+				<div className="w-full max-w-6xl mx-auto flex flex-row gap-12 items-center">
 					{/* 左カラム：タイマー・進捗バー */}
-					<div className="flex-1 flex flex-col justify-center gap-8">
-						<div className="text-center space-y-2">
+					<div className="flex-[0_0_auto] max-w-md w-full flex flex-col justify-center gap-8 items-start text-left">
+						<div className="w-full text-center space-y-2">
 							<h1 className="text-6xl font-bold text-white drop-shadow-lg">
 								撮影中
 							</h1>
@@ -285,23 +285,25 @@ export default function CameraPage() {
 								</div>
 							)}
 						</div>
-						<div className="w-full bg-white/30 backdrop-blur-sm h-4 rounded-full overflow-hidden">
-							<div
-								className="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"
-								style={{ width: `${progressWidth}%` }}
-							></div>
+						<div className="w-full">
+							<div className="w-full bg-white/30 backdrop-blur-sm h-4 rounded-full overflow-hidden">
+								<div
+									className="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"
+									style={{ width: `${progressWidth}%` }}
+								></div>
+							</div>
 						</div>
 					</div>
 					{/* 右カラム：カメラプレビュー */}
-					<div className="flex-1 flex items-center justify-center">
-						<Card className="overflow-hidden shadow-2xl border-4 border-white max-w-4xl w-full mx-auto">
-							<CardContent className="p-0 relative h-[80vh] max-h-[90vh] flex items-center justify-center">
+					<div className="flex-[0_0_auto] flex items-center justify-end">
+						<Card className="overflow-hidden shadow-2xl border-4 border-black w-[min(90vh,45vw)] max-w-none ml-auto">
+							<CardContent className="p-0 relative h-[90vh] flex items-center justify-center bg-black">
 								<video
 									ref={videoRef}
 									autoPlay
 									playsInline
 									muted
-									className="w-auto h-full aspect-[9/16] object-contain z-10"
+									className="w-full h-auto object-contain z-10"
 									style={{
 										transform: `${
 											mirror ? "scaleX(-1)" : "scaleX(1)"
