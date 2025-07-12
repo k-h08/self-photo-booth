@@ -1,20 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
-
-export async function POST(req: NextRequest) {
-	const data = await req.json();
-	// id=1の設定を上書き（なければ新規作成）
-	const setting = await prisma.setting.upsert({
-		where: { id: 1 },
-		update: data,
-		create: { id: 1, ...data },
-	});
-	return NextResponse.json(setting);
-}
 
 export async function GET() {
-	const setting = await prisma.setting.findUnique({ where: { id: 1 } });
-	return NextResponse.json(setting);
+	return NextResponse.json({
+		captureMode: process.env.NEXT_PUBLIC_CAPTURE_MODE || "time",
+		photoCount: Number(process.env.NEXT_PUBLIC_PHOTO_COUNT) || 4,
+		timeLimit: Number(process.env.NEXT_PUBLIC_TIME_LIMIT) || 3,
+		allowUserChoice: process.env.NEXT_PUBLIC_ALLOW_USER_CHOICE === "true",
+		deliveryMethod: process.env.NEXT_PUBLIC_DELIVERY_METHOD || "qr",
+		mirror: process.env.NEXT_PUBLIC_MIRROR === "true",
+	});
+}
+
+export async function POST() {
+	return NextResponse.json(
+		{ ok: false, message: "envからのみ取得可能です" },
+		{ status: 405 }
+	);
 }
