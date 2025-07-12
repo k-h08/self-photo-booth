@@ -5,6 +5,7 @@ const winston = require("winston");
 const path = require("path");
 const fs = require("fs").promises;
 const config = require("./config.json");
+const os = require("os");
 require("dotenv").config();
 
 // ロガーの設定
@@ -242,6 +243,23 @@ async function ensureFolder(folderPath, folderName) {
 		await fs.mkdir(folderPath, { recursive: true });
 		logger.info(`${folderName}フォルダを作成しました: ${folderPath}`);
 	}
+}
+
+// パスの~や絶対パスをホームディレクトリに展開する関数
+function expandHomeDir(p) {
+	if (!p) return p;
+	if (p.startsWith("~/")) {
+		return path.join(os.homedir(), p.slice(2));
+	}
+	return p;
+}
+
+// configのパスを展開
+if (config.watch && config.watch.folder) {
+	config.watch.folder = expandHomeDir(config.watch.folder);
+}
+if (config.upload && config.upload.backupFolder) {
+	config.upload.backupFolder = expandHomeDir(config.upload.backupFolder);
 }
 
 // メイン処理

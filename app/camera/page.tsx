@@ -22,7 +22,7 @@ export default function CameraPage() {
 	const [capturedPhotos, setCapturedPhotos] = useState<string[]>([]);
 	const [photoCount, setPhotoCount] = useState(4);
 	const [timeLimit, setTimeLimit] = useState<number | null>(null);
-	const [captureMode, setCaptureMode] = useState<"count" | "time">("count");
+	const [captureMode, setCaptureMode] = useState<"count" | "time">("time"); // timeで固定
 	const [deliveryMethod, setDeliveryMethod] = useState("qr");
 	const [allowUserChoice, setAllowUserChoice] = useState(true);
 	const [timeLeft, setTimeLeft] = useState<number | null>(null);
@@ -38,14 +38,9 @@ export default function CameraPage() {
 			if (res.ok) {
 				const data = await res.json();
 				if (data) {
-					setCaptureMode(data.captureMode || "count");
-					if (data.captureMode === "count") {
-						setPhotoCount(Number(data.photoCount) || 4);
-						setTimeLimit(null);
-					} else {
-						setTimeLimit(data.timeLimit ?? null);
-						setPhotoCount(4); // デフォルト値
-					}
+					setCaptureMode("time"); // 強制的にtime
+					setTimeLimit(data.timeLimit ?? null);
+					setPhotoCount(4); // デフォルト値
 					setAllowUserChoice(
 						typeof data.allowUserChoice === "boolean"
 							? data.allowUserChoice
@@ -244,13 +239,14 @@ export default function CameraPage() {
 								</div>
 							</div>
 						)}
-						{captureMode === "count" && (
+						{/* 枚数制限UIを非表示に */}
+						{/* {captureMode === "count" && (
 							<div className="bg-white/30 backdrop-blur-sm rounded-full p-2 inline-flex items-center">
 								<div className="text-xl font-bold text-white">
 									{photosTaken} / {photoCount}枚
 								</div>
 							</div>
-						)}
+						)} */}
 					</div>
 
 					<div className="w-full bg-white/30 backdrop-blur-sm h-4 rounded-full overflow-hidden">

@@ -35,7 +35,7 @@ import { useRouter } from "next/navigation";
 export default function AdminPage() {
 	const router = useRouter();
 	// 撮影設定
-	const [captureMode, setCaptureMode] = useState("count"); // count or time
+	const [captureMode, setCaptureMode] = useState("time"); // timeで固定
 	const [photoCount, setPhotoCount] = useState("4");
 	const [timeLimit, setTimeLimit] = useState("3");
 	const [mirror, setMirror] = useState(true);
@@ -56,7 +56,7 @@ export default function AdminPage() {
 			if (res.ok) {
 				const data = await res.json();
 				if (data) {
-					setCaptureMode(data.captureMode || "count");
+					setCaptureMode("time"); // 強制的にtime
 					setPhotoCount(data.photoCount?.toString() || "4");
 					setTimeLimit(data.timeLimit?.toString() || "3");
 					setAllowUserChoice(
@@ -216,16 +216,8 @@ export default function AdminPage() {
 											</CardDescription>
 										</CardHeader>
 										<CardContent className="space-y-8 p-8">
-											<div className="space-y-4">
-												<Label className="text-lg font-medium">
-													カメラ反転
-												</Label>
-												<Switch
-													checked={mirror}
-													onCheckedChange={setMirror}
-													className="scale-125 data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-purple-500 data-[state=checked]:to-pink-500 mt-2 ml-4"
-												/>
-											</div>
+											{/* 撮影モード選択UIを非表示に */}
+											{/*
 											<div className="space-y-4">
 												<Label className="text-lg font-medium">
 													撮影モード
@@ -269,7 +261,10 @@ export default function AdminPage() {
 													</div>
 												</RadioGroup>
 											</div>
+											*/}
 
+											{/* 枚数制限UIも非表示に */}
+											{/*
 											{captureMode === "count" ? (
 												<div className="space-y-3">
 													<Label
@@ -313,6 +308,7 @@ export default function AdminPage() {
 													</p>
 												</div>
 											)}
+											*/}
 										</CardContent>
 									</Card>
 								</TabsContent>

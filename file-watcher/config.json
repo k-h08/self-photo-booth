@@ -5,7 +5,7 @@
 		"bucketName": "private-photos"
 	},
 	"watch": {
-		"folder": "/Users/k.hamashita/Desktop/Photos",
+		"folder": "~/Desktop/Photos",
 		"stabilityThreshold": 2000,
 		"pollInterval": 100,
 		"ignoreCompressedFiles": true,
@@ -18,7 +18,7 @@
 		"compressQuality": 80,
 		"autoDeleteAfterUpload": false,
 		"moveToBackupFolder": true,
-		"backupFolder": "/Users/k.hamashita/Desktop/Photos/uploaded",
+		"backupFolder": "~/Desktop/Photos/uploaded",
 		"createBackupFolderIfNotExists": true
 	},
 	"logging": {
