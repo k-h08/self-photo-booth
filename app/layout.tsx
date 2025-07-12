@@ -5,6 +5,8 @@ export const metadata: Metadata = {
 	title: "とるんと",
 	description: "Created with v0",
 	generator: "v0.dev",
+	viewport:
+		"width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover",
 };
 
 export default function RootLayout({

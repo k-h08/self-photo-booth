@@ -22,5 +22,7 @@ model Setting {
 model PhotoSession {
   sessionId      String   @id
   photoFileNames Json
+  startTime      BigInt?
+  endTime        BigInt?
   createdAt      DateTime @default(now())
 }

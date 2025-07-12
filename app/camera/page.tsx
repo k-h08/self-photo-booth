@@ -37,6 +37,7 @@ export default function CameraPage() {
 			: 0;
 	const [uploadedCount, setUploadedCount] = useState(0);
 	const [initialImageCount, setInitialImageCount] = useState(0);
+	const [startTime] = useState(() => Date.now());
 
 	useEffect(() => {
 		const fetchSettings = async () => {
@@ -139,6 +140,8 @@ export default function CameraPage() {
 									body: JSON.stringify({
 										sessionId,
 										files: uploadedFiles,
+										startTime,
+										endTime: Date.now(),
 									}),
 								});
 								setTimeout(() => {
