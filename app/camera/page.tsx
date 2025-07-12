@@ -31,6 +31,10 @@ export default function CameraPage() {
 	const [uploadedFiles, setUploadedFiles] = useState<string[]>([]);
 	const [mirror, setMirror] = useState(true);
 	const [flash, setFlash] = useState(false);
+	const CAMERA_ROTATE_DEGREE =
+		typeof window !== "undefined"
+			? Number(process.env.NEXT_PUBLIC_CAMERA_ROTATE_DEGREE) || 0
+			: 0;
 
 	useEffect(() => {
 		const fetchSettings = async () => {
@@ -226,68 +230,65 @@ export default function CameraPage() {
 				</Button>
 			</Link>
 			<div className="container flex flex-col items-center justify-center min-h-screen p-4 sm:p-6">
-				<div className="w-full max-w-6xl mx-auto space-y-8">
-					<div className="text-center space-y-2">
-						<h1 className="text-4xl font-bold text-white drop-shadow-lg">
-							撮影中
-						</h1>
-						{captureMode === "time" && timeLimit && timeLeft !== null && (
-							<div className="bg-black/50 backdrop-blur-sm rounded-2xl p-4 inline-block border-4 border-white shadow-2xl">
-								<div className="text-4xl font-bold text-white">
-									残り: {Math.floor(timeLeft / 60)}:
-									{(timeLeft % 60).toString().padStart(2, "0")}
-								</div>
-							</div>
-						)}
-						{/* 枚数制限UIを非表示に */}
-						{/* {captureMode === "count" && (
-							<div className="bg-white/30 backdrop-blur-sm rounded-full p-2 inline-flex items-center">
-								<div className="text-xl font-bold text-white">
-									{photosTaken} / {photoCount}枚
-								</div>
-							</div>
-						)} */}
-					</div>
-
-					<div className="w-full bg-white/30 backdrop-blur-sm h-4 rounded-full overflow-hidden">
-						<div
-							className="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"
-							style={{ width: `${progressWidth}%` }}
-						></div>
-					</div>
-
-					<Card className="overflow-hidden shadow-2xl border-4 border-white max-w-4xl w-full mx-auto">
-						<CardContent className="p-0 relative h-[50vw] max-h-[70vh]">
-							<video
-								ref={videoRef}
-								autoPlay
-								playsInline
-								muted
-								className="w-full h-full aspect-[16/9] object-contain z-10"
-								style={{ transform: mirror ? "scaleX(-1)" : "scaleX(1)" }}
-							/>
-							{countdown !== null && (
-								<div className="absolute inset-0 flex items-center justify-center bg-black/50">
-									<div className="relative">
-										<span className="text-white text-[15rem] font-bold leading-none">
-											{countdown}
-										</span>
-										<div className="absolute -inset-8 border-8 border-white rounded-full animate-ping opacity-75"></div>
+				<div className="w-full max-w-6xl mx-auto flex flex-col sm:flex-row gap-8 items-stretch">
+					{/* 左カラム：タイマー・進捗バー */}
+					<div className="flex-1 flex flex-col justify-center gap-8">
+						<div className="text-center space-y-2">
+							<h1 className="text-6xl font-bold text-white drop-shadow-lg">
+								撮影中
+							</h1>
+							{captureMode === "time" && timeLimit && timeLeft !== null && (
+								<div className="bg-black/50 backdrop-blur-sm rounded-2xl p-4 inline-block border-4 border-white shadow-2xl">
+									<div className="text-7xl font-bold text-white">
+										残り: {Math.floor(timeLeft / 60)}:
+										{(timeLeft % 60).toString().padStart(2, "0")}
 									</div>
 								</div>
 							)}
-
-							<canvas ref={canvasRef} className="hidden" />
-
-							{/* フレーム装飾 */}
-							<div className="absolute top-0 left-0 w-20 h-20 border-t-8 border-l-8 border-white rounded-tl-3xl"></div>
-							<div className="absolute top-0 right-0 w-20 h-20 border-t-8 border-r-8 border-white rounded-tr-3xl"></div>
-							<div className="absolute bottom-0 left-0 w-20 h-20 border-b-8 border-l-8 border-white rounded-bl-3xl"></div>
-							<div className="absolute bottom-0 right-0 w-20 h-20 border-b-8 border-r-8 border-white rounded-br-3xl"></div>
-						</CardContent>
-					</Card>
+						</div>
+						<div className="w-full bg-white/30 backdrop-blur-sm h-4 rounded-full overflow-hidden">
+							<div
+								className="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"
+								style={{ width: `${progressWidth}%` }}
+							></div>
+						</div>
+					</div>
+					{/* 右カラム：カメラプレビュー */}
+					<div className="flex-1 flex items-center justify-center">
+						<Card className="overflow-hidden shadow-2xl border-4 border-white max-w-4xl w-full mx-auto">
+							<CardContent className="p-0 relative h-[80vh] max-h-[90vh] flex items-center justify-center">
+								<video
+									ref={videoRef}
+									autoPlay
+									playsInline
+									muted
+									className="w-auto h-full aspect-[9/16] object-contain z-10"
+									style={{
+										transform: `${
+											mirror ? "scaleX(-1)" : "scaleX(1)"
+										} rotate(${CAMERA_ROTATE_DEGREE}deg)`,
+									}}
+								/>
+								{countdown !== null && (
+									<div className="absolute inset-0 flex items-center justify-center bg-black/50">
+										<div className="relative">
+											<span className="text-white text-[15rem] font-bold leading-none">
+												{countdown}
+											</span>
+											<div className="absolute -inset-8 border-8 border-white rounded-full animate-ping opacity-75"></div>
+										</div>
+									</div>
+								)}
+								<canvas ref={canvasRef} className="hidden" />
+								{/* フレーム装飾 */}
+								<div className="absolute top-0 left-0 w-20 h-20 border-t-8 border-l-8 border-white rounded-tl-3xl"></div>
+								<div className="absolute top-0 right-0 w-20 h-20 border-t-8 border-r-8 border-white rounded-tr-3xl"></div>
+								<div className="absolute bottom-0 left-0 w-20 h-20 border-b-8 border-l-8 border-white rounded-bl-3xl"></div>
+								<div className="absolute bottom-0 right-0 w-20 h-20 border-b-8 border-r-8 border-white rounded-br-3xl"></div>
+							</CardContent>
+						</Card>
+					</div>
 				</div>
-
 				{/* 装飾要素 */}
 				<div className="fixed top-10 left-10 animate-bounce">
 					<Sparkles className="h-10 w-10 text-yellow-300" />
