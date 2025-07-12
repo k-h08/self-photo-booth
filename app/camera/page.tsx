@@ -35,6 +35,8 @@ export default function CameraPage() {
 		typeof window !== "undefined"
 			? Number(process.env.NEXT_PUBLIC_CAMERA_ROTATE_DEGREE) || 0
 			: 0;
+	const [uploadedCount, setUploadedCount] = useState(0);
+	const [initialImageCount, setInitialImageCount] = useState(0);
 
 	useEffect(() => {
 		const fetchSettings = async () => {
@@ -86,6 +88,37 @@ export default function CameraPage() {
 			}
 		};
 	}, []);
+
+	// 撮影開始時にストレージ全体の画像数を取得
+	useEffect(() => {
+		const fetchInitialCount = async () => {
+			const { data, error } = await supabase.storage
+				.from(BUCKET_NAME)
+				.list("", { limit: 1000 }); // ルート直下
+			if (!error && data) {
+				setInitialImageCount(
+					data.filter((f) => f.name.match(/\.(jpg|jpeg|png|heic)$/i)).length
+				);
+			}
+		};
+		fetchInitialCount();
+	}, []);
+
+	// 2秒ごとにストレージ全体の画像数を取得し、差分を表示
+	useEffect(() => {
+		const interval = setInterval(async () => {
+			const { data, error } = await supabase.storage
+				.from(BUCKET_NAME)
+				.list("", { limit: 1000 });
+			if (!error && data) {
+				const currentCount = data.filter((f) =>
+					f.name.match(/\.(jpg|jpeg|png|heic)$/i)
+				).length;
+				setUploadedCount(Math.max(0, currentCount - initialImageCount));
+			}
+		}, 2000);
+		return () => clearInterval(interval);
+	}, [initialImageCount]);
 
 	// 時間制限モードのタイマー処理
 	useEffect(() => {
@@ -242,6 +275,9 @@ export default function CameraPage() {
 									<div className="text-7xl font-bold text-white">
 										残り: {Math.floor(timeLeft / 60)}:
 										{(timeLeft % 60).toString().padStart(2, "0")}
+									</div>
+									<div className="text-3xl font-bold text-white mt-4">
+										撮影した枚数: {uploadedCount} 枚
 									</div>
 								</div>
 							)}
