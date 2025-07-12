@@ -1,0 +1,31 @@
+{
+	"name": "photo-booth-file-watcher",
+	"version": "1.0.0",
+	"description": "フォトブース用ファイル監視・アップロードツール",
+	"main": "index.js",
+	"type": "module",
+	"scripts": {
+		"start": "node index.js",
+		"dev": "node --watch index.js",
+		"build": "echo 'No build step required'"
+	},
+	"dependencies": {
+		"chokidar": "^3.5.3",
+		"@supabase/supabase-js": "^2.49.8",
+		"dotenv": "^16.4.5",
+		"nanoid": "^5.0.6",
+		"sharp": "^0.33.2",
+		"commander": "^12.0.0"
+	},
+	"devDependencies": {
+		"@types/node": "^22"
+	},
+	"keywords": [
+		"file-watcher",
+		"photo-booth",
+		"supabase",
+		"upload"
+	],
+	"author": "Photo Booth Team",
+	"license": "MIT"
+}

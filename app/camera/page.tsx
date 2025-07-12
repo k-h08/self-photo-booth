@@ -98,10 +98,26 @@ export default function CameraPage() {
 					if (prev === null) return null;
 					if (prev <= 1) {
 						clearInterval(timerRef.current!);
-						setTimeout(
-							() => router.push(`/complete?delivery=${deliveryMethod}`),
-							500
-						);
+						// 時間制限終了時にセッション情報を保存してから完了ページに遷移
+						const saveSessionAndRedirect = async () => {
+							try {
+								await fetch("/api/photo-session", {
+									method: "POST",
+									headers: { "Content-Type": "application/json" },
+									body: JSON.stringify({
+										sessionId,
+										files: uploadedFiles,
+									}),
+								});
+								setTimeout(() => {
+									router.push(`/complete?session=${sessionId}`);
+								}, 500);
+							} catch (error) {
+								console.error("セッション保存エラー:", error);
+								router.push(`/complete?delivery=${deliveryMethod}`);
+							}
+						};
+						saveSessionAndRedirect();
 						return 0;
 					}
 					return prev - 1;
@@ -112,7 +128,15 @@ export default function CameraPage() {
 			};
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [captureMode, timeLimit, cameraReady]);
+	}, [
+		captureMode,
+		timeLimit,
+		cameraReady,
+		sessionId,
+		uploadedFiles,
+		deliveryMethod,
+		router,
+	]);
 
 	const startCountdown = () => {
 		setCountdown(3);
@@ -179,8 +203,11 @@ export default function CameraPage() {
 		}
 	};
 
-	// 撮影枚数に基づいて進捗バーの幅を計算
-	const progressWidth = (photosTaken / photoCount) * 100;
+	// 進捗バーの幅を計算
+	const progressWidth =
+		captureMode === "time" && timeLimit && timeLeft !== null
+			? ((timeLimit * 60 - timeLeft) / (timeLimit * 60)) * 100
+			: (photosTaken / photoCount) * 100;
 
 	// 撮影設定
 	const photoSettings = {
@@ -204,22 +231,26 @@ export default function CameraPage() {
 				</Button>
 			</Link>
 			<div className="container flex flex-col items-center justify-center min-h-screen p-4 sm:p-6">
-				<div className="w-full max-w-xl mx-auto space-y-8">
+				<div className="w-full max-w-6xl mx-auto space-y-8">
 					<div className="text-center space-y-2">
 						<h1 className="text-4xl font-bold text-white drop-shadow-lg">
 							撮影中
 						</h1>
-						<div className="bg-white/30 backdrop-blur-sm rounded-full p-2 inline-flex items-center">
-							<div className="text-xl font-bold text-white">
-								{photosTaken} / {photoCount}枚
-								{captureMode === "time" && timeLimit && timeLeft !== null && (
-									<span className="ml-4 text-lg">
-										残り: {Math.floor(timeLeft / 60)}:
-										{(timeLeft % 60).toString().padStart(2, "0")}
-									</span>
-								)}
+						{captureMode === "time" && timeLimit && timeLeft !== null && (
+							<div className="bg-black/50 backdrop-blur-sm rounded-2xl p-4 inline-block border-4 border-white shadow-2xl">
+								<div className="text-4xl font-bold text-white">
+									残り: {Math.floor(timeLeft / 60)}:
+									{(timeLeft % 60).toString().padStart(2, "0")}
+								</div>
 							</div>
-						</div>
+						)}
+						{captureMode === "count" && (
+							<div className="bg-white/30 backdrop-blur-sm rounded-full p-2 inline-flex items-center">
+								<div className="text-xl font-bold text-white">
+									{photosTaken} / {photoCount}枚
+								</div>
+							</div>
+						)}
 					</div>
 
 					<div className="w-full bg-white/30 backdrop-blur-sm h-4 rounded-full overflow-hidden">
@@ -229,8 +260,8 @@ export default function CameraPage() {
 						></div>
 					</div>
 
-					<Card className="overflow-hidden shadow-2xl border-4 border-white max-w-2xl w-full mx-auto">
-						<CardContent className="p-0 relative h-[28vw] max-h-[45vh]">
+					<Card className="overflow-hidden shadow-2xl border-4 border-white max-w-4xl w-full mx-auto">
+						<CardContent className="p-0 relative h-[50vw] max-h-[70vh]">
 							<video
 								ref={videoRef}
 								autoPlay
@@ -242,7 +273,7 @@ export default function CameraPage() {
 							{countdown !== null && (
 								<div className="absolute inset-0 flex items-center justify-center bg-black/50">
 									<div className="relative">
-										<span className="text-white text-9xl font-bold">
+										<span className="text-white text-[15rem] font-bold leading-none">
 											{countdown}
 										</span>
 										<div className="absolute -inset-8 border-8 border-white rounded-full animate-ping opacity-75"></div>
@@ -259,23 +290,6 @@ export default function CameraPage() {
 							<div className="absolute bottom-0 right-0 w-20 h-20 border-b-8 border-r-8 border-white rounded-br-3xl"></div>
 						</CardContent>
 					</Card>
-
-					<div className="flex justify-center items-center">
-						<Button
-							size="lg"
-							className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 hover:opacity-90 text-xl p-8 h-20 w-40 rounded-full shadow-xl border-4 border-white"
-							onClick={startCountdown}
-							disabled={
-								!cameraReady ||
-								countdown !== null ||
-								(captureMode === "count" && photosTaken >= photoCount) ||
-								(captureMode === "time" && timeLeft === 0)
-							}
-						>
-							<Camera className="mr-2 h-8 w-8" />
-							撮影する
-						</Button>
-					</div>
 				</div>
 
 				{/* 装飾要素 */}

@@ -1,0 +1,29 @@
+{
+	"name": "photo-file-watcher",
+	"version": "1.0.0",
+	"description": "Mac用の写真ファイル監視・アップロードツール",
+	"main": "index.js",
+	"scripts": {
+		"start": "node index.js",
+		"dev": "nodemon index.js",
+		"build": "echo 'No build step required'"
+	},
+	"dependencies": {
+		"chokidar": "^3.5.3",
+		"@supabase/supabase-js": "^2.49.8",
+		"sharp": "^0.33.2",
+		"winston": "^3.11.0",
+		"dotenv": "^16.4.5"
+	},
+	"devDependencies": {
+		"nodemon": "^3.0.3"
+	},
+	"keywords": [
+		"file-watcher",
+		"photo-upload",
+		"supabase",
+		"mac"
+	],
+	"author": "Your Name",
+	"license": "MIT"
+}

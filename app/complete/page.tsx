@@ -36,8 +36,13 @@ function CompleteContent() {
 	const [downloadUrl, setDownloadUrl] = useState("");
 	useEffect(() => {
 		if (sessionId) {
+			// ローカル環境とプロダクション環境の両方に対応
 			const origin =
-				typeof window !== "undefined" ? window.location.origin : "";
+				typeof window !== "undefined"
+					? window.location.origin
+					: process.env.NODE_ENV === "development"
+					? "http://localhost:3000"
+					: "";
 			setDownloadUrl(`${origin}/download/${sessionId}`);
 		}
 	}, [sessionId]);
